@@ -101,6 +101,8 @@ class SupportAgentPipeline:
             "retrieval_items": evidence.items,
             "escalation": {
                 "routing": decision.routing.value,
+                "risk_score": decision.risk_score,
+                "routing_threshold": decision.routing_threshold,
                 "triggers": decision.triggers,
                 "rationale": decision.rationale
             },

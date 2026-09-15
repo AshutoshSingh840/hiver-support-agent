@@ -52,8 +52,9 @@ INTENT_DEFINITIONS: Dict[IntentCode, Dict[str, Any]] = {
         "description": "App Store downloads, Apple ID sign-in, billing, refunds, subscriptions, disabled accounts, Apple Pay, digital media purchases",
         "primary_keywords": [
             r"app store", r"apple id", r"\bpassword\b", r"\bpurchase\b", r"\breceipt\b",
-            r"\brefund(ed)?\b", r"\bbilling\b", r"\bsubscription\b", r"charged \b",
-            r"charged over", r"charged again", r"unauthorized charge", r"download(ing)? (an )?app",
+            r"\brefund(ed)?\b", r"\bbilling\b", r"\bsubscription\b",
+            r"charged (again|twice|extra|for|\$\d+|unauthorized|me)", r"unauthorized charge",
+            r"overcharged", r"charge on my (card|account)", r"download(ing)? (an )?app",
             r"in-app purchase", r"itunes store", r"card declined", r"payment method",
             # Apple Pay, Wallet, and media purchases
             r"apple pay\b", r"apple music\b", r"itunes (app|music|purchase|account|library|gift card)",
@@ -65,8 +66,7 @@ INTENT_DEFINITIONS: Dict[IntentCode, Dict[str, Any]] = {
             r"recycle an? apple device", r"trade in"
         ],
         "secondary_keywords": [
-            r"\bcharged\b", r"\bdownload(ing)?\b", r"\baccount\b", r"\bpaid\b",
-            r"\bmusic\b", r"\bwallet\b", r"\bbuy\b", r"\bbought\b"
+            r"\baccount\b", r"\bpaid\b", r"\bmusic\b", r"\bwallet\b", r"\bbuy\b", r"\bbought\b"
         ],
         "keywords": [
             r"app store", r"apple id", r"password", r"purchase", r"refund", r"billing", r"subscription", r"download", r"apple pay", r"itunes"
@@ -127,7 +127,7 @@ INTENT_DEFINITIONS: Dict[IntentCode, Dict[str, Any]] = {
         ],
         "secondary_keywords": [
             r"\bsignal\b", r"\bconnect(ion|ing|ed)?\b", r"\bnetwork\b", r"\bcarrier\b",
-            r"\bcall\b", r"\bcalls\b", r"\bimessage\b", r"\btexting\b", r"\bvoicemail\b"
+            r"\bcalls\b", r"\bimessage\b", r"\btexting\b", r"\bvoicemail\b"
         ],
         "keywords": [
             r"wifi", r"wi-fi", r"bluetooth", r"airdrop", r"no service", r"cellular", r"sim", r"signal", r"connect"
@@ -159,13 +159,16 @@ INTENT_DEFINITIONS: Dict[IntentCode, Dict[str, Any]] = {
         "name": "Mac & Watch Ecosystem",
         "description": "Apple Watch pairing/syncing, MacBook hardware/software, macOS issues, Watch activity",
         "primary_keywords": [
-            r"apple watch", r"\bwatch\b", r"\bmacbook( pro| air)?\b", r"\bimac\b",
-            r"\bmacos\b", r"series [1-9]", r"watchos", r"\bmac\b",
-            r"apple watch (activity|workout|badge|sync)", r"macbook (startup|audio|sound|battery)"
+            r"apple watch", r"watchos", r"iwatch", r"\bmacbook( pro| air)?\b", r"\bimac\b",
+            r"\bmacos\b", r"series [1-9]", r"watch (series|app|sync|face|band|os)",
+            r"apple watch (activity|workout|badge|sync)", r"macbook (startup|audio|sound|battery)",
+            r"\bmac mini\b", r"\bmac pro\b"
         ],
-        "secondary_keywords": [],
+        "secondary_keywords": [
+            r"\bwatch\b", r"\bmac\b"
+        ],
         "keywords": [
-            r"watch", r"macbook", r"imac", r"macos", r"mac", r"series 1"
+            r"apple watch", r"watchos", r"macbook", r"imac", r"macos", r"series 1"
         ]
     },
     IntentCode.INT_OUT_OF_SCOPE: {

@@ -45,6 +45,8 @@
       "properties": {
         "conversation_id": { "type": "integer" },
         "routing": { "type": "string", "enum": ["auto-handle", "escalate"] },
+        "risk_score": { "type": "number", "minimum": 0.0, "maximum": 1.0 },
+        "routing_threshold": { "type": "number", "minimum": 0.0, "maximum": 1.0 },
         "triggers": { "type": "array", "items": { "type": "string" } },
         "intent_confidence": { "type": "number", "minimum": 0.0, "maximum": 1.0 },
         "evidence_top_score": { "type": "number", "minimum": 0.0, "maximum": 1.0 },

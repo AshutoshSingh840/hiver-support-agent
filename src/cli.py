@@ -392,8 +392,9 @@ def handle(ctx, text, conversation_id, retrieval_corpus, sub_json):
             click.echo(f"      * [#{ev['source_conversation_id']}] (Score: {ev['relevance_score']:.2f}): {ev['resolution_text'][:70]}...")
 
         click.echo(f"\n[3] Escalation Routing:")
-        click.echo(f"    - Decision : {result['escalation']['routing'].upper()}")
-        click.echo(f"    - Rationale: {result['escalation']['rationale']}")
+        click.echo(f"    - Decision  : {result['escalation']['routing'].upper()}")
+        click.echo(f"    - Risk Score: {result['escalation'].get('risk_score', 0.0):.2f} (Threshold: {result['escalation'].get('routing_threshold', 0.45):.2f})")
+        click.echo(f"    - Rationale : {result['escalation']['rationale']}")
 
         if result.get("draft_reply"):
             click.echo(f"\n[4] Grounded Draft Reply:")
@@ -500,9 +501,29 @@ def evaluate(ctx, benchmark_type, benchmark_file, golden_set, human_manifest, ma
             status = "PASS" if m.passed_target else "FAIL"
             click.echo(f"{m.metric_name:<38} | {m.score:<8.3f} | {m.baseline_score:<8.3f} | {status:<10}")
 
+        # Baselines Comparison Table
+        maj_f1 = report.headline_metrics["intent_macro_f1"].baseline_score
+        simple_f1 = report.simple_baseline_macro_f1 or 0.0
+        simple_f1_std = report.simple_baseline_macro_f1_std or 0.0
+        agent_f1 = report.headline_metrics["intent_macro_f1"].score
+        click.echo("\n" + "-" * 65)
+        click.echo("Intent Classification Baselines Comparison:")
+        click.echo(f"  [1] Trivial Baseline (Majority Class)    : Macro F1 = {maj_f1:.4f} (eval: all 200 golden examples)")
+        click.echo(f"  [2] Simple ML Baseline (TF-IDF + LogReg) : Macro F1 = {simple_f1:.4f} ± {simple_f1_std:.4f} (5-fold CV on 200 golden examples)")
+        click.echo(f"  [3] Hiver Support Agent (Hybrid Model)   : Macro F1 = {agent_f1:.4f} (eval: all 200 golden examples)")
+        click.echo(f"  NOTE: Baseline [2] uses 5-fold CV (160 train/40 test per fold); Agent [3] is scored on full 200 examples.")
+        click.echo(f"  These are not a perfectly apples-to-apples comparison. See EVALUATION_REPORT.md §1 for details.")
+
         click.echo("\nPer-Class Intent Macro F1:")
         for cls_name, f1_val in report.per_class_f1.items():
             click.echo(f"  - {cls_name:<20}: {f1_val:.3f}")
+
+        if report.routing_threshold_sweep:
+            click.echo("\nRouting Risk Threshold Sweep (Safety vs Coverage Trade-off):")
+            click.echo(f"  {'Tau':>5} | {'False-Auto':>10} | {'Precision':>10} | {'Recall':>10} | {'Coverage':>10} | {'Esc F1':>8}")
+            click.echo("  " + "-" * 60)
+            for s in report.routing_threshold_sweep:
+                click.echo(f"  {s['threshold']:5.2f} | {s['false_auto_handle_rate']:10.3f} | {s['escalation_precision']:10.3f} | {s['escalation_recall']:10.3f} | {s['auto_handle_coverage']:10.3f} | {s['escalation_f1']:8.3f}")
 
         click.echo(f"\nDocumented Failure Mode Analyses: {len(report.failure_mode_analysis)} distinct cases captured.")
         for idx, fc in enumerate(report.failure_mode_analysis[:3], start=1):

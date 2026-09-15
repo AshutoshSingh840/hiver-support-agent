@@ -26,13 +26,15 @@ class RetrievalConfig:
 
 @dataclass
 class EscalationConfig:
+    routing_threshold: float = 0.45
     intent_confidence_threshold: float = 0.75
     retrieval_min_score: float = 0.35
     sensitive_keywords: List[str] = field(default_factory=lambda: [
         # Legal, Law Enforcement, & Security / Theft
         "lawsuit", "lawyer", "legal", "stolen", "police", "fraud", "hacked", "security", "compromised", "lost phone", "lost device",
-        # Financial & Account Security
+        # Financial & Account / Admin Security
         "unauthorized charge", "unauthorized purchase", "billing dispute", "refund", "refunded", "disabled", "locked out", "cancel subscription",
+        "administrator", "admin password", "administrator password", "admin account",
         # Hardware Danger & Physical Repair
         "exploded", "explosion", "smoke", "spark", "swelling", "swollen", "repair", "genius bar appointment", "store appointment",
         # Critical Data Loss

@@ -278,50 +278,27 @@ FR-G-001 through FR-G-004 and FR-V-006 require grounded draft reply generation, 
 ### Context & Problem
 FR-E-001 through FR-E-005 require a transparent, configurable decision engine determining `auto-handle` vs `escalate`.
 
-### Decision Logic & Rule Composition
-A conversation is routed to `escalate` if **ANY** of the following condition triggers are met:
+### Continuous Probabilistic Risk Score Formulation & Decision Routing
+The `EscalationRouter` calculates a continuous risk score $R(x) \in [0.0, 1.0]$ via Noisy-OR probabilistic aggregation across all risk channels:
 
-```python
-def evaluate_escalation(
-    intent_pred: IntentPrediction,
-    retrieved: RetrievedEvidence,
-    conversation: Conversation,
-    config: EscalationConfig
-) -> EscalationDecision:
-    triggers = []
-    
-    # Trigger 1: Out-of-Scope or Unclear Intent
-    if intent_pred.label == "INT-OUT-OF-SCOPE":
-        triggers.append("out_of_scope_intent")
-        
-    # Trigger 2: Low Intent Classifier Confidence
-    if intent_pred.confidence < config.intent_confidence_threshold:
-        triggers.append(f"low_intent_confidence ({intent_pred.confidence:.2f} < {config.intent_confidence_threshold:.2f})")
-        
-    # Trigger 3: Insufficient or Low-Relevance Evidence
-    if not retrieved.items or retrieved.top_score < config.retrieval_min_score:
-        triggers.append(f"insufficient_evidence (top_score={retrieved.top_score:.2f} < {config.retrieval_min_score:.2f})")
-        
-    # Trigger 4: Safety / Sensitive Domain Keywords
-    sensitive_keywords = ["lawsuit", "lawyer", "legal", "stolen", "police", "fraud", "hacked", "unauthorized charge"]
-    if any(kw in conversation.root_text.lower() for kw in sensitive_keywords):
-        triggers.append("sensitive_domain_trigger")
-        
-    # Trigger 5: Pure DM-Escalation Precedent
-    if retrieved.items and all(item.is_dm_escalation for item in retrieved.items):
-        triggers.append("historical_precedent_requires_dm")
+$$R(x) = 1.0 - \prod_{k} (1.0 - r_k)$$
 
-    routing = "escalate" if len(triggers) > 0 else "auto-handle"
-    return EscalationDecision(
-        routing=routing,
-        triggers=triggers,
-        intent_confidence=intent_pred.confidence,
-        evidence_top_score=retrieved.top_score,
-        rationale="; ".join(triggers) if triggers else "Passed all auto-handling criteria"
-    )
-```
+Where component risk contributions $r_k$ include:
+1. **Critical Safety / Sensitive Triggers ($r = 0.95$)**: Lawsuit, fraud, stolen device, unauthorized charge, admin password, battery swelling/smoke.
+2. **Severe Failure Patterns ($r = 0.90$)**: Bricking, boot loops, failed restores, exhausted support attempts, catastrophic data loss.
+3. **Non-English Language Support ($r = 0.95$)**: Foreign script / CJK / Cyrillic / Arabic text.
+4. **Out-of-Scope / Non-Support Intent ($r \in [0.75, 0.85]$)**: Missing support context or non-actionable complaints.
+5. **Intent Classifier Uncertainty ($r \in [0.0, 0.90]$)**: Low confidence deficit $(1.0 - \text{conf})$.
+6. **Retrieval Evidence Deficit ($r \in [0.0, 0.85]$)**: Low BM25 top score or empty search result.
+7. **DM Precedent Mandate ($r = 0.60$)**: All historical precedents require private DM handoff.
+8. **Customer Frustration / Repeat Complaints ($r = 0.55$)**: Repeated failure cycles, fix demands, or escalated customer sentiment.
+
+The final operational routing decision is derived through an explicit configurable threshold:
+- `RoutingDecision.ESCALATE` if $R(x) \ge \tau$ (default $\tau = 0.45$) or if hard safety triggers fire.
+- `RoutingDecision.AUTO_HANDLE` otherwise.
 
 ### Configurable Parameters
+- `routing_threshold`: default `0.45` (tunable via CLI/config).
 - `intent_confidence_threshold`: default `0.75` (tunable via CLI/config).
 - `retrieval_min_score`: default `0.35` (tunable via CLI/config).
 

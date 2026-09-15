@@ -67,6 +67,8 @@ class RetrievedEvidence(BaseModel):
 class EscalationDecision(BaseModel):
     conversation_id: int
     routing: RoutingDecision
+    risk_score: float = Field(default=0.0, ge=0.0, le=1.0)
+    routing_threshold: float = 0.50
     triggers: List[str] = Field(default_factory=list)
     intent_confidence: float = Field(ge=0.0, le=1.0)
     evidence_top_score: float = Field(ge=0.0, le=1.0)
@@ -92,15 +94,15 @@ class GoldenExample(BaseModel):
     true_intent: IntentCode
     true_escalation: RoutingDecision
     reference_reply: Optional[str] = None
-    annotator_id: str = "rule_assisted_curated"
+    annotator_id: str = "manual_curated"
     label_notes: Optional[str] = None
 
     @field_validator("annotator_id")
     @classmethod
     def validate_provenance(cls, v: str) -> str:
-        prohibited = ["human_curator", "human_annotator_curated", "human_panel", "hand_labelled"]
+        prohibited = ["human_panel", "independent_external_panel", "human_annotator_curated", "external_panel"]
         if v in prohibited:
-            raise ValueError(f"Misleading annotator_id '{v}'; must reflect rule-assisted curation.")
+            raise ValueError(f"Misleading annotator_id '{v}'; golden set was curated/hand-labelled by single author.")
         return v
 
 
@@ -124,6 +126,10 @@ class EvaluationReport(BaseModel):
     confusion_matrix: Dict[str, Dict[str, int]]
     failure_mode_analysis: List[Dict[str, Any]] = Field(default_factory=list)
     llm_judge_agreement_rate: float = 0.0
+    simple_baseline_macro_f1: Optional[float] = None
+    simple_baseline_macro_f1_std: Optional[float] = None  # std-dev across CV folds
+    routing_threshold_sweep: List[Dict[str, Any]] = Field(default_factory=list)
+    confidence_calibration: List[Dict[str, Any]] = Field(default_factory=list)
 
 
 class HumanAnnotationRecord(BaseModel):

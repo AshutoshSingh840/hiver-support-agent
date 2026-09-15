@@ -59,3 +59,47 @@ def test_judge_alignment():
     agreement_rate, kappa = compute_judge_alignment(human, judge)
     assert agreement_rate == 1.0
     assert kappa > 0.40
+
+
+def test_threshold_sweep():
+    from src.eval.metrics import compute_threshold_sweep
+
+    risk_scores = [0.10, 0.30, 0.45, 0.70, 0.90]
+    y_true = ["auto-handle", "auto-handle", "escalate", "escalate", "escalate"]
+    thresholds = [0.20, 0.40, 0.60, 0.80]
+
+    sweep = compute_threshold_sweep(risk_scores, y_true, thresholds=thresholds)
+    assert len(sweep) == 4
+
+    # At tau = 0.40:
+    # preds = [auto, auto, esc, esc, esc] -> matches y_true perfectly
+    s_04 = [s for s in sweep if s["threshold"] == 0.40][0]
+    assert s_04["false_auto_handle_rate"] == 0.0
+    assert s_04["escalation_precision"] == 1.0
+    assert s_04["escalation_recall"] == 1.0
+    assert s_04["auto_handle_coverage"] == 0.40
+
+    # At tau = 0.80:
+    # preds = [auto, auto, auto, auto, esc] -> 2 false auto-handles
+    s_08 = [s for s in sweep if s["threshold"] == 0.80][0]
+    assert s_08["false_auto_handle_rate"] == pytest.approx(2 / 3, 0.01)
+    assert s_08["auto_handle_coverage"] == 0.80
+
+
+def test_confidence_calibration():
+    from src.eval.metrics import compute_confidence_calibration
+
+    confidences = [0.95, 0.90, 0.85, 0.60, 0.40]
+    y_true = ["INT-IOS", "INT-IOS", "INT-BATTERY", "INT-CONN", "INT-STORE"]
+    y_pred = ["INT-IOS", "INT-IOS", "INT-BATTERY", "INT-IOS", "INT-CONN"]
+    buckets = [(0.0, 0.50), (0.50, 0.80), (0.80, 1.01)]
+
+    calib = compute_confidence_calibration(confidences, y_true, y_pred, buckets=buckets)
+    assert len(calib) == 3
+
+    # High confidence bucket [0.80, 1.01]: 3 samples, 3 correct (accuracy = 1.0)
+    high_bucket = calib[2]
+    assert high_bucket["sample_count"] == 3
+    assert high_bucket["accuracy"] == 1.0
+    assert high_bucket["mean_confidence"] == pytest.approx(0.90, 0.01)
+
