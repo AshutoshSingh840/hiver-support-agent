@@ -1,0 +1,205 @@
+{
+  "run_id": "EVAL-RUN-1789157920",
+  "run_timestamp": "2026-09-11T20:18:40.980358Z",
+  "execution_duration_sec": 44.51,
+  "golden_set_size": 200,
+  "leakage_check_passed": true,
+  "headline_metrics": {
+    "intent_macro_f1": {
+      "metric_name": "Intent Macro F1",
+      "score": 0.8574407536398967,
+      "baseline_score": 0.027777777777777776,
+      "sample_count": 200,
+      "passed_target": true
+    },
+    "retrieval_mrr_at_5": {
+      "metric_name": "Retrieval MRR@5",
+      "score": 0.771285140562249,
+      "baseline_score": 0.0,
+      "sample_count": 200,
+      "passed_target": true
+    },
+    "reply_groundedness_rate": {
+      "metric_name": "Reply Groundedness Rate (Score >= 3)",
+      "score": 1.0,
+      "baseline_score": 0.5,
+      "sample_count": 143,
+      "passed_target": true
+    },
+    "false_auto_handle_rate": {
+      "metric_name": "False-Auto-Handle Rate (Safety)",
+      "score": 0.1,
+      "baseline_score": 0.5,
+      "sample_count": 40,
+      "passed_target": true
+    },
+    "escalation_precision": {
+      "metric_name": "Escalation Precision",
+      "score": 0.631578947368421,
+      "baseline_score": 0.5,
+      "sample_count": 200,
+      "passed_target": false
+    }
+  },
+  "per_class_f1": {
+    "INT-IOS": 0.851063829787234,
+    "INT-STORE": 0.8301886792452831,
+    "INT-ICLOUD": 0.9361702127659575,
+    "INT-HARDWARE": 0.8,
+    "INT-CONN": 0.8444444444444444,
+    "INT-BATTERY": 0.9130434782608695,
+    "INT-WATCH-MAC": 0.8846153846153846,
+    "INT-OUT-OF-SCOPE": 0.8
+  },
+  "confusion_matrix": {
+    "INT-IOS": {
+      "INT-IOS": 20,
+      "INT-STORE": 1,
+      "INT-ICLOUD": 0,
+      "INT-HARDWARE": 2,
+      "INT-CONN": 0,
+      "INT-BATTERY": 0,
+      "INT-WATCH-MAC": 1,
+      "INT-OUT-OF-SCOPE": 1
+    },
+    "INT-STORE": {
+      "INT-IOS": 1,
+      "INT-STORE": 22,
+      "INT-ICLOUD": 0,
+      "INT-HARDWARE": 0,
+      "INT-CONN": 1,
+      "INT-BATTERY": 0,
+      "INT-WATCH-MAC": 0,
+      "INT-OUT-OF-SCOPE": 1
+    },
+    "INT-ICLOUD": {
+      "INT-IOS": 0,
+      "INT-STORE": 2,
+      "INT-ICLOUD": 22,
+      "INT-HARDWARE": 0,
+      "INT-CONN": 0,
+      "INT-BATTERY": 0,
+      "INT-WATCH-MAC": 1,
+      "INT-OUT-OF-SCOPE": 0
+    },
+    "INT-HARDWARE": {
+      "INT-IOS": 0,
+      "INT-STORE": 0,
+      "INT-ICLOUD": 0,
+      "INT-HARDWARE": 20,
+      "INT-CONN": 0,
+      "INT-BATTERY": 0,
+      "INT-WATCH-MAC": 1,
+      "INT-OUT-OF-SCOPE": 4
+    },
+    "INT-CONN": {
+      "INT-IOS": 0,
+      "INT-STORE": 0,
+      "INT-ICLOUD": 0,
+      "INT-HARDWARE": 2,
+      "INT-CONN": 19,
+      "INT-BATTERY": 0,
+      "INT-WATCH-MAC": 1,
+      "INT-OUT-OF-SCOPE": 3
+    },
+    "INT-BATTERY": {
+      "INT-IOS": 0,
+      "INT-STORE": 3,
+      "INT-ICLOUD": 0,
+      "INT-HARDWARE": 1,
+      "INT-CONN": 0,
+      "INT-BATTERY": 21,
+      "INT-WATCH-MAC": 0,
+      "INT-OUT-OF-SCOPE": 0
+    },
+    "INT-WATCH-MAC": {
+      "INT-IOS": 0,
+      "INT-STORE": 0,
+      "INT-ICLOUD": 0,
+      "INT-HARDWARE": 0,
+      "INT-CONN": 0,
+      "INT-BATTERY": 0,
+      "INT-WATCH-MAC": 23,
+      "INT-OUT-OF-SCOPE": 2
+    },
+    "INT-OUT-OF-SCOPE": {
+      "INT-IOS": 1,
+      "INT-STORE": 0,
+      "INT-ICLOUD": 0,
+      "INT-HARDWARE": 0,
+      "INT-CONN": 0,
+      "INT-BATTERY": 0,
+      "INT-WATCH-MAC": 0,
+      "INT-OUT-OF-SCOPE": 24
+    }
+  },
+  "failure_mode_analysis": [
+    {
+      "golden_id": "GOLDEN-001",
+      "failure_category": "unnecessary_over_escalation",
+      "customer_query": "@AppleSupport DL the latest iOS today. Very laggy 6s. Phone is running like hammered dog shit since the DL.",
+      "expected_intent": "INT-IOS",
+      "predicted_intent": "INT-IOS",
+      "expected_routing": "auto-handle",
+      "predicted_routing": "escalate",
+      "escalation_rationale": "low_intent_confidence (0.50 < 0.75)",
+      "draft_reply": "N/A"
+    },
+    {
+      "golden_id": "GOLDEN-003",
+      "failure_category": "intent_misclassification",
+      "customer_query": "11.1にあげたらTwitter少し見てるだけだし低電力モードなのに20パーへったぞ。デバイス本体ごと取り換えて数ヶ月だし今回のアプデはミスだな。バッテリー消費悪化してる。 @AppleSupport",
+      "expected_intent": "INT-IOS",
+      "predicted_intent": "INT-OUT-OF-SCOPE",
+      "expected_routing": "escalate",
+      "predicted_routing": "escalate",
+      "escalation_rationale": "out_of_scope_or_unclear_intent; non_english_language_support_needed",
+      "draft_reply": "N/A"
+    },
+    {
+      "golden_id": "GOLDEN-004",
+      "failure_category": "intent_misclassification",
+      "customer_query": "Bienvenida sea la multi tarea al 3D touch en iphone, gracias @AppleSupport #newupdate",
+      "expected_intent": "INT-IOS",
+      "predicted_intent": "INT-HARDWARE",
+      "expected_routing": "auto-handle",
+      "predicted_routing": "auto-handle",
+      "escalation_rationale": "Passed all auto-handling confidence and safety criteria.",
+      "draft_reply": "We can help with that. @317340 We offer support via Twitter in English. Get help in Spanish here: https://t.co/IBIY3vMgPj or join https://t.co/OczyRx7IOs"
+    },
+    {
+      "golden_id": "GOLDEN-009",
+      "failure_category": "intent_misclassification",
+      "customer_query": "@AppleSupport after I upgraded my iPhone to iOS 11.0.3, the back camera and the flash stopped working. Could you do something?",
+      "expected_intent": "INT-IOS",
+      "predicted_intent": "INT-HARDWARE",
+      "expected_routing": "auto-handle",
+      "predicted_routing": "auto-handle",
+      "escalation_rationale": "Passed all auto-handling confidence and safety criteria.",
+      "draft_reply": "We can help with that. @580010 Go ahead and DM us which iPhone and iOS version you're using and we'll continue working there. https://t.co/GDrqU22YpT"
+    },
+    {
+      "golden_id": "GOLDEN-010",
+      "failure_category": "intent_misclassification",
+      "customer_query": "@applesupport just updated Apple Watch to 4.1. Is ESPN radio etc only available in USA, can’t get it on my watch in the UK",
+      "expected_intent": "INT-IOS",
+      "predicted_intent": "INT-WATCH-MAC",
+      "expected_routing": "auto-handle",
+      "predicted_routing": "auto-handle",
+      "escalation_rationale": "Passed all auto-handling confidence and safety criteria.",
+      "draft_reply": "We can help with that. @164736 Great follow up question. Yes. It's only for the cellular feature. The GPS will still work."
+    },
+    {
+      "golden_id": "GOLDEN-028",
+      "failure_category": "unsafe_false_auto_handle",
+      "customer_query": "@AppleSupport I get prompted for a system administrator password on a MBP MacOS but there is no system administrator account I’m aware of!! https://t.co/M1DbEkDzaS",
+      "expected_intent": "INT-STORE",
+      "predicted_intent": "INT-STORE",
+      "expected_routing": "escalate",
+      "predicted_routing": "auto-handle",
+      "escalation_rationale": "Passed all auto-handling confidence and safety criteria.",
+      "draft_reply": "We can help with that. @557256 We'd be happy to work with you to get to the bottom of this. After reinstalling macOS, did you restore from a backup? DM us here: https://t.co/GDrqU22YpT"
+    }
+  ],
+  "llm_judge_agreement_rate": 0.972027972027972
+}

@@ -1,0 +1,195 @@
+{
+  "run_id": "EVAL-RUN-1789407471",
+  "run_timestamp": "2026-09-14T17:37:51.035294Z",
+  "benchmark_name": "human_benchmark_v1.0",
+  "execution_duration_sec": 46.3,
+  "golden_set_size": 200,
+  "leakage_check_passed": true,
+  "headline_metrics": {
+    "intent_macro_f1": {
+      "metric_name": "Intent Macro F1",
+      "score": 0.501056386402889,
+      "baseline_score": 0.09227129337539432,
+      "sample_count": 200,
+      "passed_target": false
+    },
+    "retrieval_mrr_at_5": {
+      "metric_name": "Retrieval MRR@5",
+      "score": 0.8493939393939393,
+      "baseline_score": 0.0,
+      "sample_count": 200,
+      "passed_target": true
+    },
+    "reply_groundedness_rate": {
+      "metric_name": "Reply Groundedness Rate (Score >= 3)",
+      "score": 1.0,
+      "baseline_score": 0.5,
+      "sample_count": 122,
+      "passed_target": true
+    },
+    "false_auto_handle_rate": {
+      "metric_name": "False-Auto-Handle Rate (Safety)",
+      "score": 0.627906976744186,
+      "baseline_score": 0.5,
+      "sample_count": 43,
+      "passed_target": false
+    },
+    "escalation_precision": {
+      "metric_name": "Escalation Precision",
+      "score": 0.20512820512820512,
+      "baseline_score": 0.5,
+      "sample_count": 200,
+      "passed_target": false
+    }
+  },
+  "per_class_f1": {
+    "INT-IOS": 0.7046632124352331,
+    "INT-STORE": 0.55,
+    "INT-ICLOUD": 0.4444444444444444,
+    "INT-HARDWARE": 0.375,
+    "INT-CONN": 0.6666666666666666,
+    "INT-BATTERY": 0.5454545454545454,
+    "INT-WATCH-MAC": 0.5555555555555556,
+    "INT-OUT-OF-SCOPE": 0.16666666666666666
+  },
+  "confusion_matrix": {
+    "INT-IOS": {
+      "INT-IOS": 68,
+      "INT-STORE": 2,
+      "INT-ICLOUD": 3,
+      "INT-HARDWARE": 1,
+      "INT-CONN": 1,
+      "INT-BATTERY": 3,
+      "INT-WATCH-MAC": 0,
+      "INT-OUT-OF-SCOPE": 39
+    },
+    "INT-STORE": {
+      "INT-IOS": 2,
+      "INT-STORE": 11,
+      "INT-ICLOUD": 1,
+      "INT-HARDWARE": 0,
+      "INT-CONN": 0,
+      "INT-BATTERY": 0,
+      "INT-WATCH-MAC": 1,
+      "INT-OUT-OF-SCOPE": 3
+    },
+    "INT-ICLOUD": {
+      "INT-IOS": 1,
+      "INT-STORE": 1,
+      "INT-ICLOUD": 4,
+      "INT-HARDWARE": 0,
+      "INT-CONN": 0,
+      "INT-BATTERY": 0,
+      "INT-WATCH-MAC": 0,
+      "INT-OUT-OF-SCOPE": 4
+    },
+    "INT-HARDWARE": {
+      "INT-IOS": 2,
+      "INT-STORE": 2,
+      "INT-ICLOUD": 0,
+      "INT-HARDWARE": 3,
+      "INT-CONN": 0,
+      "INT-BATTERY": 1,
+      "INT-WATCH-MAC": 0,
+      "INT-OUT-OF-SCOPE": 2
+    },
+    "INT-CONN": {
+      "INT-IOS": 1,
+      "INT-STORE": 1,
+      "INT-ICLOUD": 0,
+      "INT-HARDWARE": 1,
+      "INT-CONN": 7,
+      "INT-BATTERY": 0,
+      "INT-WATCH-MAC": 0,
+      "INT-OUT-OF-SCOPE": 3
+    },
+    "INT-BATTERY": {
+      "INT-IOS": 0,
+      "INT-STORE": 1,
+      "INT-ICLOUD": 0,
+      "INT-HARDWARE": 0,
+      "INT-CONN": 0,
+      "INT-BATTERY": 6,
+      "INT-WATCH-MAC": 0,
+      "INT-OUT-OF-SCOPE": 5
+    },
+    "INT-WATCH-MAC": {
+      "INT-IOS": 2,
+      "INT-STORE": 2,
+      "INT-ICLOUD": 0,
+      "INT-HARDWARE": 1,
+      "INT-CONN": 0,
+      "INT-BATTERY": 0,
+      "INT-WATCH-MAC": 5,
+      "INT-OUT-OF-SCOPE": 2
+    },
+    "INT-OUT-OF-SCOPE": {
+      "INT-IOS": 0,
+      "INT-STORE": 2,
+      "INT-ICLOUD": 0,
+      "INT-HARDWARE": 0,
+      "INT-CONN": 0,
+      "INT-BATTERY": 0,
+      "INT-WATCH-MAC": 0,
+      "INT-OUT-OF-SCOPE": 6
+    }
+  },
+  "failure_mode_analysis": [
+    {
+      "golden_id": "HUMAN-48007",
+      "failure_category": "intent_misclassification",
+      "customer_query": "After that update my phone keeps pocked dialling, is it just me who has this? @115858 https://t.co/LRI6Amxl9F",
+      "expected_intent": "INT-HARDWARE",
+      "predicted_intent": "INT-IOS",
+      "expected_routing": "auto-handle",
+      "predicted_routing": "auto-handle",
+      "escalation_rationale": "Passed all auto-handling confidence and safety criteria.",
+      "draft_reply": "We can help with that. @198217 That's not the experience we want for you. Meet up with us in DM and we'll work on this together. https://t.co/GDrqU22YpT"
+    },
+    {
+      "golden_id": "HUMAN-71171",
+      "failure_category": "unsafe_false_auto_handle",
+      "customer_query": "So why tf hasn’t @AppleSupport fixed this “I️”",
+      "expected_intent": "INT-IOS",
+      "predicted_intent": "INT-IOS",
+      "expected_routing": "escalate",
+      "predicted_routing": "auto-handle",
+      "escalation_rationale": "Passed all auto-handling confidence and safety criteria.",
+      "draft_reply": "We can help with that. @565672 Getting the performance you expect from your iPhone is very important to us here at Apple. Join us in DM using this link: https://t.co/GDrqU22YpT"
+    },
+    {
+      "golden_id": "HUMAN-107348",
+      "failure_category": "unnecessary_over_escalation",
+      "customer_query": "Went to apple store with call receiving issue with my iPhone. Their reply \"1 to 2 call dropping per week is very standard. we can't do anything.\" That's the level of support you get from apple now a days. @116333 @6126 @115858 @AppleSupport",
+      "expected_intent": "INT-CONN",
+      "predicted_intent": "INT-CONN",
+      "expected_routing": "auto-handle",
+      "predicted_routing": "escalate",
+      "escalation_rationale": "severe_unresolved_failure_trigger ('prior_support_channel_exhausted')",
+      "draft_reply": "N/A"
+    },
+    {
+      "golden_id": "HUMAN-143565",
+      "failure_category": "intent_misclassification",
+      "customer_query": "Hey @115858 how is it that a charge cord I bought from you guys is hittin me with the “Not supported” message? 🤦‍♂️❗️Lmaolololol Steve Jobs I miss ya fam. Want my SideKick back tho",
+      "expected_intent": "INT-HARDWARE",
+      "predicted_intent": "INT-BATTERY",
+      "expected_routing": "auto-handle",
+      "predicted_routing": "auto-handle",
+      "escalation_rationale": "Passed all auto-handling confidence and safety criteria.",
+      "draft_reply": "We can help with that. @446388 Check out the \"If an alert says that your accessory isn't supported or certified\" section here: https://t.co/uqxquyfdn0"
+    },
+    {
+      "golden_id": "HUMAN-162739",
+      "failure_category": "intent_misclassification",
+      "customer_query": "@115858 All of my pictures mysteriously disappeared from my phone. Help ME!",
+      "expected_intent": "INT-ICLOUD",
+      "predicted_intent": "INT-OUT-OF-SCOPE",
+      "expected_routing": "auto-handle",
+      "predicted_routing": "escalate",
+      "escalation_rationale": "out_of_scope_or_unclear_intent",
+      "draft_reply": "N/A"
+    }
+  ],
+  "llm_judge_agreement_rate": 0.7786885245901639
+}

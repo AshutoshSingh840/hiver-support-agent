@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "HiverSupportAgentPipelineSchemas",
+  "description": "JSON Schemas for module interfaces and decision records in Hiver Support Agent",
+  "definitions": {
+    "IntentPrediction": {
+      "type": "object",
+      "required": ["conversation_id", "label", "confidence", "supporting_excerpt", "model_version"],
+      "properties": {
+        "conversation_id": { "type": "integer" },
+        "label": {
+          "type": "string",
+          "enum": [
+            "INT-IOS",
+            "INT-STORE",
+            "INT-ICLOUD",
+            "INT-HARDWARE",
+            "INT-CONN",
+            "INT-BATTERY",
+            "INT-WATCH-MAC",
+            "INT-OUT-OF-SCOPE"
+          ]
+        },
+        "confidence": { "type": "number", "minimum": 0.0, "maximum": 1.0 },
+        "supporting_excerpt": { "type": "string" },
+        "model_version": { "type": "string" }
+      }
+    },
+    "EvidenceItem": {
+      "type": "object",
+      "required": ["source_conversation_id", "relevance_score", "intent_label", "customer_query", "agent_resolution"],
+      "properties": {
+        "source_conversation_id": { "type": "integer" },
+        "relevance_score": { "type": "number", "minimum": 0.0, "maximum": 1.0 },
+        "intent_label": { "type": "string" },
+        "customer_query": { "type": "string" },
+        "agent_resolution": { "type": "string" },
+        "is_dm_escalation": { "type": "boolean" },
+        "temporal_date": { "type": "string", "format": "date-time" }
+      }
+    },
+    "EscalationDecision": {
+      "type": "object",
+      "required": ["conversation_id", "routing", "triggers", "intent_confidence", "evidence_top_score", "rationale"],
+      "properties": {
+        "conversation_id": { "type": "integer" },
+        "routing": { "type": "string", "enum": ["auto-handle", "escalate"] },
+        "triggers": { "type": "array", "items": { "type": "string" } },
+        "intent_confidence": { "type": "number", "minimum": 0.0, "maximum": 1.0 },
+        "evidence_top_score": { "type": "number", "minimum": 0.0, "maximum": 1.0 },
+        "rationale": { "type": "string" }
+      }
+    },
+    "DraftReply": {
+      "type": "object",
+      "required": ["conversation_id", "draft_text", "cited_evidence_ids", "intent_label", "escalation_routing"],
+      "properties": {
+        "conversation_id": { "type": "integer" },
+        "draft_text": { "type": "string" },
+        "cited_evidence_ids": { "type": "array", "items": { "type": "integer" } },
+        "intent_label": { "type": "string" },
+        "escalation_routing": { "type": "string", "enum": ["auto-handle", "escalate"] },
+        "escalation_rationale": { "type": "string" },
+        "generation_latency_ms": { "type": "number" }
+      }
+    }
+  }
+}
